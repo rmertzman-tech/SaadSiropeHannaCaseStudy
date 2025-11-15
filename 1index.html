@@ -1404,7 +1404,7 @@ How can you coordinate with them?"></textarea>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
                     <button class="btn-primary" onclick="exportAllResponses()">📥 Download All Responses</button>
                     <button class="btn-primary" onclick="copyAllResponses()">📋 Copy to Clipboard</button>
-                    <button class="btn-primary" onclick="printResponses()">🖨️ Print/Save as PDF</button>
+                    <button class="btn-primary" onclick="viewAllResponses()">👁️ View All Responses</button>
                     <button class="btn-primary" onclick="clearAllResponses()" style="background: #ef4444;">🗑️ Clear All Data</button>
                 </div>
                 <p style="margin-top: 15px; font-size: 0.9em;">
@@ -1529,144 +1529,173 @@ How can you coordinate with them?"></textarea>
 
         // Save responses to local storage
         function saveResponse(key) {
-            let data = {};
-            
-            if (key === 'privileges') {
-                data.privileges = document.getElementById('privileges-response').value;
-                data.withoutPrivileges = document.getElementById('without-privileges').value;
-            } else if (key === 'blindspots') {
-                data.blindspots = document.getElementById('blindspots-response').value;
-                data.seekingPerspectives = document.getElementById('seeking-perspectives').value;
-            } else if (key === 'non-negotiables') {
-                data.nonNegotiables = document.getElementById('non-negotiables').value;
-            } else if (key === 'future-pull') {
-                data.futurePull = document.getElementById('future-pull').value;
-            } else if (key === 'atcf-tracking') {
-                data.hc = document.getElementById('hc-slider').value;
-                data.pi = document.getElementById('pi-slider').value;
-                data.pc = document.getElementById('pc-slider').value;
-                data.mcc = document.getElementById('mcc-slider').value;
-                data.intervention = document.getElementById('intervention').value;
-                data.date = new Date().toISOString();
-            } else if (key === 'amc-network') {
-                data.network = document.getElementById('amc-network').value;
+            try {
+                let data = {};
+                
+                if (key === 'privileges') {
+                    data.privileges = document.getElementById('privileges-response').value;
+                    data.withoutPrivileges = document.getElementById('without-privileges').value;
+                } else if (key === 'blindspots') {
+                    data.blindspots = document.getElementById('blindspots-response').value;
+                    data.seekingPerspectives = document.getElementById('seeking-perspectives').value;
+                } else if (key === 'non-negotiables') {
+                    data.nonNegotiables = document.getElementById('non-negotiables').value;
+                } else if (key === 'future-pull') {
+                    data.futurePull = document.getElementById('future-pull').value;
+                } else if (key === 'atcf-tracking') {
+                    data.hc = document.getElementById('hc-slider').value;
+                    data.pi = document.getElementById('pi-slider').value;
+                    data.pc = document.getElementById('pc-slider').value;
+                    data.mcc = document.getElementById('mcc-slider').value;
+                    data.intervention = document.getElementById('intervention').value;
+                    data.date = new Date().toISOString();
+                } else if (key === 'amc-network') {
+                    data.network = document.getElementById('amc-network').value;
+                }
+                
+                localStorage.setItem('bishop-saad-' + key, JSON.stringify(data));
+                alert('Response saved! You can come back to review or update it anytime.');
+            } catch (e) {
+                alert('Error saving: ' + e.message);
             }
-            
-            localStorage.setItem('bishop-saad-' + key, JSON.stringify(data));
-            alert('Response saved! You can come back to review or update it anytime.');
         }
 
         // Load saved responses on page load
         window.addEventListener('load', function() {
-            // Load ATCF values if they exist
-            const atcfData = localStorage.getItem('bishop-saad-atcf-tracking');
-            if (atcfData) {
-                const data = JSON.parse(atcfData);
-                if (data.hc) document.getElementById('hc-slider').value = data.hc;
-                if (data.pi) document.getElementById('pi-slider').value = data.pi;
-                if (data.pc) document.getElementById('pc-slider').value = data.pc;
-                if (data.mcc) document.getElementById('mcc-slider').value = data.mcc;
-                
-                // Update displays
-                updateScore('hc', data.hc);
-                updateScore('pi', data.pi);
-                updateScore('pc', data.pc);
-                updateScore('mcc', data.mcc);
-                
-                if (data.intervention) document.getElementById('intervention').value = data.intervention;
-            }
-
-            // Load other responses
-            const keys = ['privileges', 'blindspots', 'non-negotiables', 'future-pull', 'amc-network'];
-            keys.forEach(key => {
-                const saved = localStorage.getItem('bishop-saad-' + key);
-                if (saved) {
-                    const data = JSON.parse(saved);
-                    if (key === 'privileges') {
-                        if (data.privileges) document.getElementById('privileges-response').value = data.privileges;
-                        if (data.withoutPrivileges) document.getElementById('without-privileges').value = data.withoutPrivileges;
-                    } else if (key === 'blindspots') {
-                        if (data.blindspots) document.getElementById('blindspots-response').value = data.blindspots;
-                        if (data.seekingPerspectives) document.getElementById('seeking-perspectives').value = data.seekingPerspectives;
-                    } else if (key === 'non-negotiables') {
-                        if (data.nonNegotiables) document.getElementById('non-negotiables').value = data.nonNegotiables;
-                    } else if (key === 'future-pull') {
-                        if (data.futurePull) document.getElementById('future-pull').value = data.futurePull;
-                    } else if (key === 'amc-network') {
-                        if (data.network) document.getElementById('amc-network').value = data.network;
-                    }
+            try {
+                // Load ATCF values if they exist
+                const atcfData = localStorage.getItem('bishop-saad-atcf-tracking');
+                if (atcfData) {
+                    const data = JSON.parse(atcfData);
+                    if (data.hc) document.getElementById('hc-slider').value = data.hc;
+                    if (data.pi) document.getElementById('pi-slider').value = data.pi;
+                    if (data.pc) document.getElementById('pc-slider').value = data.pc;
+                    if (data.mcc) document.getElementById('mcc-slider').value = data.mcc;
+                    
+                    // Update displays
+                    updateScore('hc', data.hc);
+                    updateScore('pi', data.pi);
+                    updateScore('pc', data.pc);
+                    updateScore('mcc', data.mcc);
+                    
+                    if (data.intervention) document.getElementById('intervention').value = data.intervention;
                 }
-            });
+
+                // Load other responses
+                const keys = ['privileges', 'blindspots', 'non-negotiables', 'future-pull', 'amc-network'];
+                keys.forEach(key => {
+                    const saved = localStorage.getItem('bishop-saad-' + key);
+                    if (saved) {
+                        const data = JSON.parse(saved);
+                        if (key === 'privileges') {
+                            if (data.privileges) document.getElementById('privileges-response').value = data.privileges;
+                            if (data.withoutPrivileges) document.getElementById('without-privileges').value = data.withoutPrivileges;
+                        } else if (key === 'blindspots') {
+                            if (data.blindspots) document.getElementById('blindspots-response').value = data.blindspots;
+                            if (data.seekingPerspectives) document.getElementById('seeking-perspectives').value = data.seekingPerspectives;
+                        } else if (key === 'non-negotiables') {
+                            if (data.nonNegotiables) document.getElementById('non-negotiables').value = data.nonNegotiables;
+                        } else if (key === 'future-pull') {
+                            if (data.futurePull) document.getElementById('future-pull').value = data.futurePull;
+                        } else if (key === 'amc-network') {
+                            if (data.network) document.getElementById('amc-network').value = data.network;
+                        }
+                    }
+                });
+            } catch (e) {
+                console.error('Error loading saved data:', e);
+            }
         });
 
         // Export all responses to downloadable text file
         function exportAllResponses() {
-            const responses = gatherAllResponses();
-            const content = formatResponsesForExport(responses);
-            
-            // Create blob and download
-            const blob = new Blob([content], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'Bishop_Saad_Assignment_' + new Date().toISOString().split('T')[0] + '.txt';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            alert('Your responses have been downloaded! You can now upload this file to Canvas.');
+            try {
+                const responses = gatherAllResponses();
+                const content = formatResponsesForExport(responses);
+                
+                // Create blob and download
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'Bishop_Saad_Assignment_' + new Date().toISOString().split('T')[0] + '.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                alert('Your responses have been downloaded! You can now upload this file to Canvas.');
+            } catch (e) {
+                alert('Error downloading: ' + e.message);
+            }
         }
 
-        // Copy all responses to clipboard
+        // Copy all responses to clipboard with fallback
         function copyAllResponses() {
-            const responses = gatherAllResponses();
-            const content = formatResponsesForExport(responses);
+            try {
+                const responses = gatherAllResponses();
+                const content = formatResponsesForExport(responses);
+                
+                // Try modern clipboard API first
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(content).then(() => {
+                        document.getElementById('export-content').textContent = content;
+                        document.getElementById('export-preview').style.display = 'block';
+                        document.getElementById('export-preview').scrollIntoView({ behavior: 'smooth' });
+                        alert('Responses copied to clipboard! You can now paste into Canvas. Preview shown below.');
+                    }).catch(err => {
+                        // Fallback to old method
+                        fallbackCopyTextToClipboard(content);
+                    });
+                } else {
+                    // Use fallback immediately if clipboard API not available
+                    fallbackCopyTextToClipboard(content);
+                }
+            } catch (e) {
+                alert('Error copying: ' + e.message + '. Try the Download button instead.');
+            }
+        }
+        
+        // Fallback copy method that works everywhere
+        function fallbackCopyTextToClipboard(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.top = 0;
+            textArea.style.left = 0;
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
             
-            navigator.clipboard.writeText(content).then(() => {
-                // Show preview
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    document.getElementById('export-content').textContent = text;
+                    document.getElementById('export-preview').style.display = 'block';
+                    document.getElementById('export-preview').scrollIntoView({ behavior: 'smooth' });
+                    alert('Copied to clipboard! Preview shown below.');
+                } else {
+                    alert('Could not copy. Please use Download button instead.');
+                }
+            } catch (err) {
+                alert('Error: ' + err + '. Please use Download button instead.');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+
+        // View all responses on page (replaces print function which is blocked)
+        function viewAllResponses() {
+            try {
+                const responses = gatherAllResponses();
+                const content = formatResponsesForExport(responses);
+                
                 document.getElementById('export-content').textContent = content;
                 document.getElementById('export-preview').style.display = 'block';
                 document.getElementById('export-preview').scrollIntoView({ behavior: 'smooth' });
-                alert('Responses copied to clipboard! You can now paste into Canvas. Preview shown below.');
-            }).catch(err => {
-                alert('Could not copy to clipboard. Please use the Download button instead.');
-            });
-        }
-
-        // Print responses (can save as PDF)
-        function printResponses() {
-            const responses = gatherAllResponses();
-            const content = formatResponsesForExport(responses);
-            
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <html>
-                <head>
-                    <title>Bishop Saad Assignment - ${new Date().toLocaleDateString()}</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
-                        h1 { color: #1e293b; border-bottom: 3px solid #3b82f6; padding-bottom: 10px; }
-                        h2 { color: #475569; margin-top: 30px; }
-                        .section { margin-bottom: 30px; padding: 20px; background: #f8fafc; border-left: 4px solid #3b82f6; }
-                        .question { font-weight: bold; color: #1e293b; margin-bottom: 10px; }
-                        .response { margin-left: 20px; white-space: pre-wrap; }
-                        .metadata { font-size: 0.9em; color: #64748b; margin-bottom: 20px; }
-                    </style>
-                </head>
-                <body>
-                    <h1>🕊️ Bishop Saad Sirop Hanna: Commonwealth of One + AMC Assignment</h1>
-                    <div class="metadata">
-                        <strong>Student:</strong> [Your Name Here]<br>
-                        <strong>Date Completed:</strong> ${new Date().toLocaleDateString()}<br>
-                        <strong>Course:</strong> Ethics / Commonwealth of One Module
-                    </div>
-                    ${formatResponsesForPrint(responses)}
-                </body>
-                </html>
-            `);
-            printWindow.document.close();
-            printWindow.print();
+            } catch (e) {
+                alert('Error viewing responses: ' + e.message);
+            }
         }
 
         // Clear all saved responses
